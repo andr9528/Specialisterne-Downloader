@@ -21,7 +21,7 @@ namespace Downloader.Service
                 await httpClient.GetAsync(link, HttpCompletionOption.ResponseHeadersRead, ct);
             response.EnsureSuccessStatusCode();
 
-            var contentType = response.Content.Headers.ContentType?.MediaType;
+            string? contentType = response.Content.Headers.ContentType?.MediaType;
 
             if (string.IsNullOrWhiteSpace(contentType))
                 throw new InvalidOperationException($"No Content-Type returned for '{link}'.");

@@ -89,7 +89,7 @@ namespace Downloader.Service
         private void AddHeaderAndMetadata(
             MarkdownBuilder builder, string createdAtText, string downloadExportPath, TimeSpan? timeSpentDownloading)
         {
-            var timeSpendParagraph = timeSpentDownloading.HasValue
+            string timeSpendParagraph = timeSpentDownloading.HasValue
                 ? $"In total it took {FormatDurationHumanReadable(timeSpentDownloading.Value)} to complete the download."
                 : "No time was spent downloading.";
 
@@ -124,7 +124,8 @@ namespace Downloader.Service
             {
                 foreach (IDownloadTarget t in primary)
                 {
-                    string line = FormatSuccessLine(t.PrimaryLink, t.FullOutputFileName!, t.TimeToDownload, t.OutputFileSize);
+                    string line = FormatSuccessLine(t.PrimaryLink, t.FullOutputFileName!, t.TimeToDownload,
+                        t.OutputFileSize);
 
                     ul.AddTaskListItem(line, true);
                 }
@@ -143,7 +144,8 @@ namespace Downloader.Service
             {
                 foreach (IDownloadTarget t in secondary)
                 {
-                    string line = FormatSuccessLine(t.SecondaryLink, t.FullOutputFileName!, t.TimeToDownload, t.OutputFileSize);
+                    string line = FormatSuccessLine(t.SecondaryLink, t.FullOutputFileName!, t.TimeToDownload,
+                        t.OutputFileSize);
 
                     ul.AddTaskListItem(line, true);
                 }
@@ -154,8 +156,7 @@ namespace Downloader.Service
         {
             builder.AddHeader(2, "Not downloaded");
 
-            builder.AddParagraph(
-                $"Files not downloaded: {none.Count}");
+            builder.AddParagraph($"Files not downloaded: {none.Count}");
 
             builder.AddUnorderedList(ul =>
             {
@@ -164,7 +165,8 @@ namespace Downloader.Service
             });
         }
 
-        private string FormatSuccessLine(string? link, string fullOutputFileName, TimeSpan? timeToDownload, long fileSizeBytes)
+        private string FormatSuccessLine(
+            string? link, string fullOutputFileName, TimeSpan? timeToDownload, long fileSizeBytes)
         {
             if (string.IsNullOrWhiteSpace(link))
                 link = "<missing link>";
@@ -201,7 +203,7 @@ namespace Downloader.Service
             if (time is null)
                 return "unknown";
 
-            var t = time.Value;
+            TimeSpan t = time.Value;
 
             if (t.TotalSeconds < 1)
                 return $"{t.TotalMilliseconds:0}ms";

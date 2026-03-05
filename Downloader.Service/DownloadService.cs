@@ -116,8 +116,8 @@ namespace Downloader.Service
         private async Task<DownloadAttemptResult> HandleSuccessfulAttempt(
             string link, DownloadedUsing downloadedUsing, int attempt, int maxDownloadTries)
         {
-            logger.LogDebug("Attempting download ({Attempt}/{Max}) using {LinkLabel} link.", attempt,
-                maxDownloadTries, downloadedUsing.ToString().ToTitleFromScreamingSnakeCase());
+            logger.LogDebug("Attempting download ({Attempt}/{Max}) using {LinkLabel} link.", attempt, maxDownloadTries,
+                downloadedUsing.ToString().ToTitleFromScreamingSnakeCase());
 
             const int timeLimitMinutes = 30;
             using var timeoutCts = new CancellationTokenSource(TimeSpan.FromMinutes(timeLimitMinutes));
@@ -125,14 +125,16 @@ namespace Downloader.Service
             Task<(Stream stream, TimeSpan elapsed)> downloadTask =
                 fileDownloaderService.DownloadOnce(link, timeoutCts.Token);
 
-            var completed = await Task.WhenAny(downloadTask, Task.Delay(Timeout.InfiniteTimeSpan, timeoutCts.Token));
+            Task completed = await Task.WhenAny(downloadTask, Task.Delay(Timeout.InfiniteTimeSpan, timeoutCts.Token));
 
             if (completed != downloadTask)
             {
                 // ensure cancellation requested (in case Delay completed by cancellation)
                 await timeoutCts.CancelAsync();
-                logger.LogWarning("Download with {DownloadedUsing} reached hard limit for time spent", downloadedUsing.ToString().ToTitleFromScreamingSnakeCase());
-                throw new TimeoutException($"Download did not complete within {timeLimitMinutes} minutes. Link: {link}");
+                logger.LogWarning("Download with {DownloadedUsing} reached hard limit for time spent",
+                    downloadedUsing.ToString().ToTitleFromScreamingSnakeCase());
+                throw new TimeoutException(
+                    $"Download did not complete within {timeLimitMinutes} minutes. Link: {link}");
             }
 
             // propagate any exceptions from DownloadOnce
@@ -146,8 +148,7 @@ namespace Downloader.Service
         }
 
         private async Task<bool> HandleFailedAttempt(
-            Exception ex, DownloadedUsing downloadedUsing, int attempt, int maxDownloadTries,
-            int secondsBetweenRetries)
+            Exception ex, DownloadedUsing downloadedUsing, int attempt, int maxDownloadTries, int secondsBetweenRetries)
         {
             logger.LogTrace(ex, "Download attempt failed ({Attempt}/{Max}) using {LinkLabel} link.", attempt,
                 maxDownloadTries, downloadedUsing.ToString().ToTitleFromScreamingSnakeCase());

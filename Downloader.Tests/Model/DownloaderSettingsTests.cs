@@ -8,7 +8,7 @@ namespace Downloader.Tests.Model
     {
         private static DownloaderSettings CreateValidSettings()
         {
-            var rootedBase = Path.Combine(Path.GetTempPath(), "DownloaderSettingsTests");
+            string rootedBase = Path.Combine(Path.GetTempPath(), "DownloaderSettingsTests");
 
             return new DownloaderSettings
             {
@@ -21,7 +21,7 @@ namespace Downloader.Tests.Model
                 SecondsWaitBetweenRetry = 5,
 
                 TargetStartIndex = -1,
-                TargetEndIndex = -1
+                TargetEndIndex = -1,
             };
         }
 
@@ -32,7 +32,7 @@ namespace Downloader.Tests.Model
             DownloaderSettings? settings = null;
 
             // Act
-            var result = DownloaderSettings.IsValid(settings);
+            bool result = DownloaderSettings.IsValid(settings);
 
             // Assert
             result.Should().BeFalse();
@@ -44,11 +44,11 @@ namespace Downloader.Tests.Model
         public void IsValid_WhenDownloadedFilesOutputPathIsMissing_ReturnsFalse(string? value)
         {
             // Arrange
-            var settings = CreateValidSettings();
+            DownloaderSettings settings = CreateValidSettings();
             settings.DownloadedFilesOutputPath = value!;
 
             // Act
-            var result = DownloaderSettings.IsValid(settings);
+            bool result = DownloaderSettings.IsValid(settings);
 
             // Assert
             result.Should().BeFalse();
@@ -60,11 +60,11 @@ namespace Downloader.Tests.Model
         public void IsValid_WhenReportsOutputPathIsMissing_ReturnsFalse(string? value)
         {
             // Arrange
-            var settings = CreateValidSettings();
+            DownloaderSettings settings = CreateValidSettings();
             settings.ReportsOutputPath = value!;
 
             // Act
-            var result = DownloaderSettings.IsValid(settings);
+            bool result = DownloaderSettings.IsValid(settings);
 
             // Assert
             result.Should().BeFalse();
@@ -76,11 +76,11 @@ namespace Downloader.Tests.Model
         public void IsValid_WhenFilesToDownloadExcelInputIsMissing_ReturnsFalse(string? value)
         {
             // Arrange
-            var settings = CreateValidSettings();
+            DownloaderSettings settings = CreateValidSettings();
             settings.FilesToDownloadExcelInput = value!;
 
             // Act
-            var result = DownloaderSettings.IsValid(settings);
+            bool result = DownloaderSettings.IsValid(settings);
 
             // Assert
             result.Should().BeFalse();
@@ -90,11 +90,11 @@ namespace Downloader.Tests.Model
         public void IsValid_WhenDownloadedFilesOutputPathIsNotRooted_ReturnsFalse()
         {
             // Arrange
-            var settings = CreateValidSettings();
+            DownloaderSettings settings = CreateValidSettings();
             settings.DownloadedFilesOutputPath = "relative-path";
 
             // Act
-            var result = DownloaderSettings.IsValid(settings);
+            bool result = DownloaderSettings.IsValid(settings);
 
             // Assert
             result.Should().BeFalse();
@@ -104,11 +104,11 @@ namespace Downloader.Tests.Model
         public void IsValid_WhenReportsOutputPathIsNotRooted_ReturnsFalse()
         {
             // Arrange
-            var settings = CreateValidSettings();
+            DownloaderSettings settings = CreateValidSettings();
             settings.ReportsOutputPath = "relative-path";
 
             // Act
-            var result = DownloaderSettings.IsValid(settings);
+            bool result = DownloaderSettings.IsValid(settings);
 
             // Assert
             result.Should().BeFalse();
@@ -118,11 +118,11 @@ namespace Downloader.Tests.Model
         public void IsValid_WhenFilesToDownloadExcelInputIsNotRooted_ReturnsFalse()
         {
             // Arrange
-            var settings = CreateValidSettings();
+            DownloaderSettings settings = CreateValidSettings();
             settings.FilesToDownloadExcelInput = "relative.xlsx";
 
             // Act
-            var result = DownloaderSettings.IsValid(settings);
+            bool result = DownloaderSettings.IsValid(settings);
 
             // Assert
             result.Should().BeFalse();
@@ -132,11 +132,11 @@ namespace Downloader.Tests.Model
         public void IsValid_WhenMaxConcurrentDownloadsIsLessThan1_ReturnsFalse()
         {
             // Arrange
-            var settings = CreateValidSettings();
+            DownloaderSettings settings = CreateValidSettings();
             settings.MaxConcurrentDownloads = 0;
 
             // Act
-            var result = DownloaderSettings.IsValid(settings);
+            bool result = DownloaderSettings.IsValid(settings);
 
             // Assert
             result.Should().BeFalse();
@@ -146,11 +146,11 @@ namespace Downloader.Tests.Model
         public void IsValid_WhenDownloadRetriesIsNegative_ReturnsFalse()
         {
             // Arrange
-            var settings = CreateValidSettings();
+            DownloaderSettings settings = CreateValidSettings();
             settings.DownloadRetries = -1;
 
             // Act
-            var result = DownloaderSettings.IsValid(settings);
+            bool result = DownloaderSettings.IsValid(settings);
 
             // Assert
             result.Should().BeFalse();
@@ -160,11 +160,11 @@ namespace Downloader.Tests.Model
         public void IsValid_WhenSecondsWaitBetweenRetryIsNegative_ReturnsFalse()
         {
             // Arrange
-            var settings = CreateValidSettings();
+            DownloaderSettings settings = CreateValidSettings();
             settings.SecondsWaitBetweenRetry = -1;
 
             // Act
-            var result = DownloaderSettings.IsValid(settings);
+            bool result = DownloaderSettings.IsValid(settings);
 
             // Assert
             result.Should().BeFalse();
@@ -174,10 +174,10 @@ namespace Downloader.Tests.Model
         public void IsValid_WhenAllRequiredValuesAreValid_ReturnsTrue()
         {
             // Arrange
-            var settings = CreateValidSettings();
+            DownloaderSettings settings = CreateValidSettings();
 
             // Act
-            var result = DownloaderSettings.IsValid(settings);
+            bool result = DownloaderSettings.IsValid(settings);
 
             // Assert
             result.Should().BeTrue();
@@ -187,7 +187,7 @@ namespace Downloader.Tests.Model
         public void IsValid_NormalizesTargetBounds_WhenTheyAreLessThanMinusOne()
         {
             // Arrange
-            var settings = CreateValidSettings();
+            DownloaderSettings settings = CreateValidSettings();
             settings.TargetStartIndex = -2;
             settings.TargetEndIndex = -123;
 
@@ -195,7 +195,7 @@ namespace Downloader.Tests.Model
             settings.MaxConcurrentDownloads = 0;
 
             // Act
-            var result = DownloaderSettings.IsValid(settings);
+            bool result = DownloaderSettings.IsValid(settings);
 
             // Assert
             result.Should().BeFalse();
@@ -207,12 +207,12 @@ namespace Downloader.Tests.Model
         public void IsValid_DoesNotChangeTargetBounds_WhenTheyAreMinusOneOrGreater()
         {
             // Arrange
-            var settings = CreateValidSettings();
+            DownloaderSettings settings = CreateValidSettings();
             settings.TargetStartIndex = -1;
             settings.TargetEndIndex = 10;
 
             // Act
-            var result = DownloaderSettings.IsValid(settings);
+            bool result = DownloaderSettings.IsValid(settings);
 
             // Assert
             result.Should().BeTrue();
@@ -224,11 +224,11 @@ namespace Downloader.Tests.Model
         public void IsValid_WhenFilesToDownloadExcelInputIsNotAnExcelExtension_ReturnsFalse()
         {
             // Arrange
-            var settings = CreateValidSettings();
+            DownloaderSettings settings = CreateValidSettings();
             settings.FilesToDownloadExcelInput = Path.Combine(Path.GetTempPath(), "not-excel.txt");
 
             // Act
-            var result = DownloaderSettings.IsValid(settings);
+            bool result = DownloaderSettings.IsValid(settings);
 
             // Assert
             result.Should().BeFalse();
@@ -243,11 +243,11 @@ namespace Downloader.Tests.Model
         public void IsValid_WhenFilesToDownloadExcelInputHasExcelExtension_ReturnsTrue(string fileName)
         {
             // Arrange
-            var settings = CreateValidSettings();
+            DownloaderSettings settings = CreateValidSettings();
             settings.FilesToDownloadExcelInput = Path.Combine(Path.GetTempPath(), fileName);
 
             // Act
-            var result = DownloaderSettings.IsValid(settings);
+            bool result = DownloaderSettings.IsValid(settings);
 
             // Assert
             result.Should().BeTrue();

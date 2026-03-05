@@ -148,7 +148,7 @@
 
         private static bool IsFilesToDownloadExcelInputExcelFile(DownloaderSettings settings)
         {
-            var ext = Path.GetExtension(settings.FilesToDownloadExcelInput);
+            string? ext = Path.GetExtension(settings.FilesToDownloadExcelInput);
 
             return ext?.ToLowerInvariant() switch
             {
@@ -158,7 +158,7 @@
                 ".xlsb" => true,
                 ".xltx" => true,
                 ".xltm" => true,
-                _ => false
+                var _ => false,
             };
         }
     }

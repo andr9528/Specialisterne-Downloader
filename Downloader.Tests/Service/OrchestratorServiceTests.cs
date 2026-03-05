@@ -45,7 +45,8 @@ namespace Downloader.Tests.Service
 
             // Assert
             downloadServiceMock.Verify(ds => ds.DownloadContent(It.IsAny<IDownloadTarget>()), Times.Never);
-            reportServiceMock.Verify(rs => rs.GenerateReport(It.IsAny<IList<IDownloadTarget>>(), It.IsAny<TimeSpan?>()), Times.Never);
+            reportServiceMock.Verify(rs => rs.GenerateReport(It.IsAny<IList<IDownloadTarget>>(), It.IsAny<TimeSpan?>()),
+                Times.Never);
             fileServiceMock.Verify(fs => fs.ExportReport(It.IsAny<string>(), It.IsAny<string>()), Times.Never);
         }
 
@@ -168,7 +169,8 @@ namespace Downloader.Tests.Service
 
         private void GivenReportOutputs(string report, string extension)
         {
-            reportServiceMock.Setup(rs => rs.GenerateReport(It.IsAny<IList<IDownloadTarget>>(), It.IsAny<TimeSpan?>())).Returns(report);
+            reportServiceMock.Setup(rs => rs.GenerateReport(It.IsAny<IList<IDownloadTarget>>(), It.IsAny<TimeSpan?>()))
+                .Returns(report);
             reportServiceMock.Setup(rs => rs.GetOutputFileExtension()).Returns(extension);
         }
 
@@ -202,7 +204,8 @@ namespace Downloader.Tests.Service
 
         private void ThenReportWasGeneratedOnce()
         {
-            reportServiceMock.Verify(rs => rs.GenerateReport(It.IsAny<IList<IDownloadTarget>>(), It.IsAny<TimeSpan?>()), Times.Once);
+            reportServiceMock.Verify(rs => rs.GenerateReport(It.IsAny<IList<IDownloadTarget>>(), It.IsAny<TimeSpan?>()),
+                Times.Once);
         }
 
         private void ThenReportWasExported(string content, string extension)

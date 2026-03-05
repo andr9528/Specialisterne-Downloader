@@ -41,7 +41,7 @@ namespace Downloader.Executor.Startup.Modules
             });
 
             var todayFileName = $"log-{DateTime.Now:yyyyMMdd}.log";
-            var fullPath = Path.Combine(LogDirectory, todayFileName);
+            string fullPath = Path.Combine(LogDirectory, todayFileName);
 
             if (File.Exists(fullPath))
             {
