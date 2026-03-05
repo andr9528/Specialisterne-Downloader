@@ -172,19 +172,14 @@ namespace Downloader.Service
             int total = queue.Count;
             var active = new List<Task<IDownloadTarget>>(Math.Min(maxConcurrent, queue.Count));
             var completed = new List<IDownloadTarget>();
+            var eta = new EtaState();
 
-            TimeSpan? estimatedRemaining = null;
-            TimeSpan? averageEstimatedRemaining = null;
-            long etaTicksSum = 0;
-            var etaSamples = 0;
-
-            var sw = Stopwatch.StartNew();
+            var stopwatch = Stopwatch.StartNew();
 
             StartInitialBatch(queue, active, maxConcurrent);
 
             logger.LogInformation(
-                "Download progress started. Completed: 0, Remaining: {Remaining}, Total: {Total}, MaxConcurrent: {MaxConcurrent}",
-                total, total, maxConcurrent);
+                "Download progress started. Total: {Total}, MaxConcurrent: {MaxConcurrent}", total, maxConcurrent);
 
             while (active.Count > 0)
             {
@@ -194,33 +189,45 @@ namespace Downloader.Service
                 // Fail-fast: exceptions bubbles up here
                 completed.Add(await finished);
 
-                int completedCount = completed.Count;
-                int remainingCount = total - completedCount;
-
-                if (completedCount > 0)
-                {
-                    estimatedRemaining = TimeSpan.FromTicks(sw.Elapsed.Ticks / completedCount * remainingCount);
-
-                    etaTicksSum += estimatedRemaining.Value.Ticks;
-                    etaSamples++;
-
-                    averageEstimatedRemaining = TimeSpan.FromTicks(etaTicksSum / etaSamples);
-                }
-
-                logger.LogInformation("Download progress. Completed: {Completed}, Remaining: {Remaining}",
-                    completedCount, remainingCount);
-                LogProgressBar(completedCount, total);
-                logger.LogInformation("Time so far: {Time}, Estimated Time Left: {Left}", sw.Elapsed,
-                    averageEstimatedRemaining.HasValue ? estimatedRemaining.ToString() : "Unknown");
+                LogProgressAndUpdateEta(total, completed.Count, stopwatch.Elapsed, eta);
 
                 StartNextIfAvailable(queue, active);
             }
 
-            sw.Stop();
-            logger.LogInformation("Download of {Total} targets completed in {Time}", total, sw.Elapsed);
-            timeToDownload = sw.Elapsed;
+            stopwatch.Stop();
+            logger.LogInformation("Download of {Total} targets completed in {Time}", total, stopwatch.Elapsed);
+            timeToDownload = stopwatch.Elapsed;
 
             return completed;
+        }
+
+        private sealed class EtaState
+        {
+            public long EtaTicksSum { get; set; }
+            public TimeSpan? AverageEstimatedRemaining { get; set; }
+        }
+
+        private void LogProgressAndUpdateEta(int total, int completedCount, TimeSpan elapsed, EtaState eta)
+        {
+            int remainingCount = total - completedCount;
+
+            TimeSpan? estimatedRemaining = null;
+
+            if (completedCount > 0)
+            {
+                estimatedRemaining = TimeSpan.FromTicks(elapsed.Ticks / completedCount * remainingCount);
+
+                eta.EtaTicksSum += estimatedRemaining.Value.Ticks;
+                eta.AverageEstimatedRemaining = TimeSpan.FromTicks(eta.EtaTicksSum / completedCount);
+            }
+
+            logger.LogInformation("Download progress. Completed: {Completed}, Remaining: {Remaining}", completedCount,
+                remainingCount);
+
+            LogProgressBar(completedCount, total);
+
+            logger.LogInformation("Time so far: {Time}, Estimated Time Left: {Left}", elapsed,
+                eta.AverageEstimatedRemaining.HasValue ? estimatedRemaining!.ToString() : "Unknown");
         }
 
         private void LogProgressBar(int completed, int total, int barWidth = 30)
