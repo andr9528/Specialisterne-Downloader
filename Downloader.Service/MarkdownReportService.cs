@@ -55,7 +55,7 @@ namespace Downloader.Service
 
         private void AddCountMetadata(MarkdownBuilder builder, int primaryCount, int secondaryCount, int noneCount)
         {
-            builder.AddParagraph($"Processed a total of {primaryCount + secondaryCount + noneCount}.")
+            builder.AddParagraph($"Processed a total of {primaryCount + secondaryCount + noneCount} download targets.")
                 .AddParagraph($"Of those, a total of {primaryCount + secondaryCount} files were downloaded.")
                 .AddParagraph($"Finally, {noneCount} failed to download for one reason or another.");
         }
