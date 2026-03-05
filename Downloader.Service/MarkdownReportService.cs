@@ -161,8 +161,22 @@ namespace Downloader.Service
             builder.AddUnorderedList(ul =>
             {
                 foreach (IDownloadTarget t in none)
-                    ul.AddTaskListItem(t.OutputFileName, false);
+                {
+                    string line = FormatFailureLine(t.OutputFileName, t.FailureReason);
+
+                    ul.AddTaskListItem(line, false);
+                }
             });
+        }
+
+        private string FormatFailureLine(string fileName, string? failureReason)
+        {
+            const int nameWidth = -10;
+
+            if (string.IsNullOrWhiteSpace(failureReason))
+                return $"{fileName,nameWidth}";
+
+            return $"{fileName,nameWidth} {failureReason}";
         }
 
         private string FormatSuccessLine(
@@ -198,7 +212,7 @@ namespace Downloader.Service
             return $"{bytes}B";
         }
 
-        private static string FormatElapsed(TimeSpan? time)
+        private string FormatElapsed(TimeSpan? time)
         {
             if (time is null)
                 return "unknown";

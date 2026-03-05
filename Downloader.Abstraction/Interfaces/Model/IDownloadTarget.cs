@@ -11,5 +11,6 @@ namespace Downloader.Abstraction.Interfaces.Model
         DownloadedUsing DownloadedUsing { get; set; }
         TimeSpan? TimeToDownload { get; set; }
         long OutputFileSize { get; set; }
+        public string? FailureReason { get; set; }
     }
 }

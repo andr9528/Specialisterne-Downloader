@@ -132,6 +132,7 @@ namespace Downloader.Service
                     continue;
                 }
 
+                target.FailureReason = "There are neither a Primary or Secondary link to use.";
                 doesNotHaveLink.Add(target);
                 logger.LogWarning(
                     "Removing target '{OutputFileName}' because neither {PrimaryLink} nor {SecondaryLink} is set.",

@@ -25,5 +25,7 @@ namespace Downloader.Model
 
         /// <inheritdoc />
         public long OutputFileSize { get; set; }
+
+        public string? FailureReason { get; set; }
     }
 }

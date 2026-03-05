@@ -65,7 +65,7 @@ namespace Downloader.Service
                 return false;
             }
 
-            DownloadAttemptResult result = await TryDownloadWithRetries(link, targetDownloadedUsing, maxDownloadTries,
+            DownloadAttemptResult result = await TryDownloadWithRetries(target, link, targetDownloadedUsing, maxDownloadTries,
                 secondsBetweenRetries);
             if (!result.Succeeded)
                 return false;
@@ -90,7 +90,8 @@ namespace Downloader.Service
         }
 
         private async Task<DownloadAttemptResult> TryDownloadWithRetries(
-            string link, DownloadedUsing downloadedUsing, int maxDownloadTries, int secondsBetweenRetries)
+            IDownloadTarget target, string link, DownloadedUsing downloadedUsing, int maxDownloadTries,
+            int secondsBetweenRetries)
         {
             for (var attempt = 1; attempt <= maxDownloadTries; attempt++)
             {
@@ -100,11 +101,20 @@ namespace Downloader.Service
                 }
                 catch (Exception ex)
                 {
-                    bool shouldRetry = await HandleFailedAttempt(ex, downloadedUsing, attempt, maxDownloadTries,
-                        secondsBetweenRetries);
+                    bool shouldRetry = CheckIfShouldRetry(ex, downloadedUsing, attempt, maxDownloadTries);
 
-                    if (!shouldRetry)
-                        break;
+                    if (shouldRetry)
+                    {
+                        logger.LogDebug("Waiting {SecondsBetweenRetries}s before retrying download.",
+                            secondsBetweenRetries);
+
+                        await Task.Delay(TimeSpan.FromSeconds(secondsBetweenRetries));
+                        continue;
+                    }
+
+                    target.FailureReason =
+                        $"Exception was caught during the last attempt to download using {downloadedUsing.ToString().ToTitleFromScreamingSnakeCase()} link - {ex.Message}";
+                    break;
                 }
             }
 
@@ -147,8 +157,8 @@ namespace Downloader.Service
             return DownloadAttemptResult.Success(stream, elapsed, downloadedUsing);
         }
 
-        private async Task<bool> HandleFailedAttempt(
-            Exception ex, DownloadedUsing downloadedUsing, int attempt, int maxDownloadTries, int secondsBetweenRetries)
+        private bool CheckIfShouldRetry(
+            Exception ex, DownloadedUsing downloadedUsing, int attempt, int maxDownloadTries)
         {
             logger.LogTrace(ex, "Download attempt failed ({Attempt}/{Max}) using {LinkLabel} link.", attempt,
                 maxDownloadTries, downloadedUsing.ToString().ToTitleFromScreamingSnakeCase());
@@ -157,10 +167,6 @@ namespace Downloader.Service
 
             if (attempt >= maxDownloadTries)
                 return false;
-
-            logger.LogDebug("Waiting {SecondsBetweenRetries}s before retrying download.", secondsBetweenRetries);
-
-            await Task.Delay(TimeSpan.FromSeconds(secondsBetweenRetries));
 
             return true;
         }
