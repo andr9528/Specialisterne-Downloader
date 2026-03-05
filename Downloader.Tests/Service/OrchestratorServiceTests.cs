@@ -146,15 +146,6 @@ namespace Downloader.Tests.Service
                 reportServiceMock.Object, options);
         }
 
-        private static IDownloadTarget CreateTarget(string outputFileName, string? primaryLink, string? secondaryLink)
-        {
-            var mock = new Mock<IDownloadTarget>();
-            mock.SetupGet(t => t.OutputFileName).Returns(outputFileName);
-            mock.SetupGet(t => t.PrimaryLink).Returns(primaryLink);
-            mock.SetupGet(t => t.SecondaryLink).Returns(secondaryLink);
-            return mock.Object;
-        }
-
         private void GivenInputTargets(IList<IDownloadTarget> targets)
         {
             fileServiceMock.Setup(fs => fs.LoadTargetsFromInput()).ReturnsAsync(targets);
