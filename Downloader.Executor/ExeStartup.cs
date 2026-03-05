@@ -131,7 +131,6 @@ namespace Downloader.Executor
             var changed = false;
 
             changed |= NormalizeIntMinMinusOne(downloaderObj, nameof(DownloaderSettings.TargetStartIndex));
-
             changed |= NormalizeIntMinMinusOne(downloaderObj, nameof(DownloaderSettings.TargetEndIndex));
 
             return changed;
@@ -165,7 +164,6 @@ namespace Downloader.Executor
             File.Delete(tmpPath);
         }
 
-
         /// <inheritdoc />
         public override void ConfigureServices(HostBuilderContext hostBuilderContext, IServiceCollection services)
         {
@@ -173,7 +171,7 @@ namespace Downloader.Executor
 
             services.AddOptions<DownloaderSettings>()
                 .Bind(hostBuilderContext.Configuration.GetSection(SETTINGS_SECTIONS))
-                .Validate(ValidateDownloaderSettings).ValidateOnStart();
+                .Validate(DownloaderSettings.IsValid).ValidateOnStart();
 
             services.AddScoped<IOrchestratorService, OrchestratorService>();
             services.AddScoped<IDownloadService, DownloadService>();
@@ -181,68 +179,6 @@ namespace Downloader.Executor
             services.AddScoped<IReportService, MarkdownReportService>();
             services.AddScoped<IInputReaderService, ExcelInputReaderService>();
             services.AddHttpClient<IHttpFileDownloaderService, HttpFileDownloaderService>();
-        }
-
-        private bool ValidateDownloaderSettings(DownloaderSettings? settings)
-        {
-            if (settings is null)
-                return false;
-
-            if (!ValidateStringSettings(settings))
-                return false;
-
-            if (!ValidateIntegerSettings(settings))
-                return false;
-
-            return true;
-        }
-
-        private bool ValidateIntegerSettings(DownloaderSettings settings)
-        {
-            // Normalize target slicing bounds (soft validation)
-            if (settings.TargetStartIndex < -1)
-                settings.TargetStartIndex = -1;
-
-            if (settings.TargetEndIndex < -1)
-                settings.TargetEndIndex = -1;
-
-            // Must be at least 1 — otherwise nothing downloads
-            if (settings.MaxConcurrentDownloads < 1)
-                return false;
-
-            // Retries must not be negative
-            if (settings.DownloadRetries < 0)
-                return false;
-
-            // Waiting time must not be negative
-            if (settings.SecondsWaitBetweenRetry < 0)
-                return false;
-
-            return true;
-        }
-
-        private bool ValidateStringSettings(DownloaderSettings settings)
-        {
-            // ---- Required string properties ----
-            if (string.IsNullOrWhiteSpace(settings.DownloadedFilesOutputPath))
-                return false;
-
-            if (string.IsNullOrWhiteSpace(settings.ReportsOutputPath))
-                return false;
-
-            if (string.IsNullOrWhiteSpace(settings.FilesToDownloadExcelInput))
-                return false;
-
-            // ---- Ensure paths are absolute ----
-            if (!Path.IsPathRooted(settings.DownloadedFilesOutputPath))
-                return false;
-
-            if (!Path.IsPathRooted(settings.ReportsOutputPath))
-                return false;
-
-            if (!Path.IsPathRooted(settings.FilesToDownloadExcelInput))
-                return false;
-            return true;
         }
     }
 }

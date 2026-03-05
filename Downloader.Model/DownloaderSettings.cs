@@ -63,5 +63,103 @@
         ///     -1 -> no upper bound
         /// </summary>
         public int TargetEndIndex { get; set; } = -1;
+
+        public static bool IsValid(DownloaderSettings? settings)
+        {
+            if (settings is null)
+                return false;
+
+            if (!ValidateStringSettings(settings))
+                return false;
+
+            if (!ValidateIntegerSettings(settings))
+                return false;
+
+            return true;
+        }
+
+        private static bool ValidateIntegerSettings(DownloaderSettings settings)
+        {
+            NormalizeTargetBounds(settings);
+
+            // Must be at least 1 — otherwise nothing downloads
+            if (settings.MaxConcurrentDownloads < 1)
+                return false;
+
+            // Retries must not be negative
+            if (settings.DownloadRetries < 0)
+                return false;
+
+            // Waiting time must not be negative
+            if (settings.SecondsWaitBetweenRetry < 0)
+                return false;
+
+            return true;
+        }
+
+        private static void NormalizeTargetBounds(DownloaderSettings settings)
+        {
+            if (settings.TargetStartIndex < -1)
+                settings.TargetStartIndex = -1;
+
+            if (settings.TargetEndIndex < -1)
+                settings.TargetEndIndex = -1;
+        }
+
+        private static bool ValidateStringSettings(DownloaderSettings settings)
+        {
+            if (!DoesRequiredStringSettingHaveValues(settings))
+                return false;
+
+            if (!AreRequiredStringSettingsRooted(settings))
+                return false;
+
+            if (!IsFilesToDownloadExcelInputExcelFile(settings))
+                return false;
+
+            return true;
+        }
+
+        private static bool AreRequiredStringSettingsRooted(DownloaderSettings settings)
+        {
+            if (!Path.IsPathRooted(settings.DownloadedFilesOutputPath))
+                return false;
+
+            if (!Path.IsPathRooted(settings.ReportsOutputPath))
+                return false;
+
+            if (!Path.IsPathRooted(settings.FilesToDownloadExcelInput))
+                return false;
+            return true;
+        }
+
+        private static bool DoesRequiredStringSettingHaveValues(DownloaderSettings settings)
+        {
+            if (string.IsNullOrWhiteSpace(settings.DownloadedFilesOutputPath))
+                return false;
+
+            if (string.IsNullOrWhiteSpace(settings.ReportsOutputPath))
+                return false;
+
+            if (string.IsNullOrWhiteSpace(settings.FilesToDownloadExcelInput))
+                return false;
+            return true;
+        }
+
+        private static bool IsFilesToDownloadExcelInputExcelFile(DownloaderSettings settings)
+        {
+            var ext = Path.GetExtension(settings.FilesToDownloadExcelInput);
+
+            return ext?.ToLowerInvariant() switch
+            {
+                ".xlsx" => true,
+                ".xlsm" => true,
+                ".xls" => true,
+                ".xlsb" => true,
+                ".xltx" => true,
+                ".xltm" => true,
+                _ => false
+            };
+        }
     }
 }
