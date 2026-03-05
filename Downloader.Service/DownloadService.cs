@@ -96,7 +96,7 @@ namespace Downloader.Service
             {
                 try
                 {
-                    return await HandleSuccessfulAttempt(link, downloadedUsing, attempt, maxDownloadTries);
+                    return await TryDownload(link, downloadedUsing, attempt, maxDownloadTries);
                 }
                 catch (Exception ex)
                 {
@@ -113,7 +113,7 @@ namespace Downloader.Service
             return DownloadAttemptResult.Failure();
         }
 
-        private async Task<DownloadAttemptResult> HandleSuccessfulAttempt(
+        private async Task<DownloadAttemptResult> TryDownload(
             string link, DownloadedUsing downloadedUsing, int attempt, int maxDownloadTries)
         {
             logger.LogDebug("Attempting download ({Attempt}/{Max}) using {LinkLabel} link.", attempt, maxDownloadTries,
