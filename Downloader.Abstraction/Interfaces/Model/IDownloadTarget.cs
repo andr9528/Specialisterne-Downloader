@@ -5,7 +5,7 @@ namespace Downloader.Abstraction.Interfaces.Model
     public interface IDownloadTarget
     {
         string OutputFileName { get; set; }
-        string? FullOutputFileName { get; set; }
+        string? FullOutputFilePath { get; set; }
         string? PrimaryLink { get; set; }
         string? SecondaryLink { get; set; }
         DownloadedUsing DownloadedUsing { get; set; }

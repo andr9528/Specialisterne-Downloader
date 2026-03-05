@@ -160,7 +160,7 @@ namespace Downloader.Tests.Service
 
             mock.SetupGet(x => x.DownloadedUsing).Returns(downloadedUsing);
             mock.SetupGet(x => x.OutputFileName).Returns(outputFileName);
-            mock.SetupGet(x => x.FullOutputFileName).Returns(fullOutputFileName);
+            mock.SetupGet(x => x.FullOutputFilePath).Returns(fullOutputFileName);
             mock.SetupGet(x => x.PrimaryLink).Returns(primaryLink);
             mock.SetupGet(x => x.SecondaryLink).Returns(secondaryLink);
             mock.SetupGet(x => x.TimeToDownload).Returns(timeToDownload);

@@ -124,7 +124,7 @@ namespace Downloader.Service
             {
                 foreach (IDownloadTarget t in primary)
                 {
-                    string line = FormatSuccessLine(t.PrimaryLink, t.FullOutputFileName!, t.TimeToDownload,
+                    string line = FormatSuccessLine(t.PrimaryLink, t.FullOutputFilePath!, t.TimeToDownload,
                         t.OutputFileSize);
 
                     ul.AddTaskListItem(line, true);
@@ -144,7 +144,7 @@ namespace Downloader.Service
             {
                 foreach (IDownloadTarget t in secondary)
                 {
-                    string line = FormatSuccessLine(t.SecondaryLink, t.FullOutputFileName!, t.TimeToDownload,
+                    string line = FormatSuccessLine(t.SecondaryLink, t.FullOutputFilePath!, t.TimeToDownload,
                         t.OutputFileSize);
 
                     ul.AddTaskListItem(line, true);

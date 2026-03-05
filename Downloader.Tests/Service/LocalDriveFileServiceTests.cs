@@ -162,11 +162,11 @@ namespace Downloader.Tests.Service
             // Assert
             Directory.Exists(downloadsDir).Should().BeTrue();
 
-            target.FullOutputFileName.Should().NotBeNullOrWhiteSpace();
-            target.FullOutputFileName.Should().EndWith(Path.Combine("downloads", "BR50092.pdf"));
+            target.FullOutputFilePath.Should().NotBeNullOrWhiteSpace();
+            target.FullOutputFilePath.Should().EndWith(Path.Combine("downloads", "BR50092.pdf"));
 
-            File.Exists(target.FullOutputFileName).Should().BeTrue();
-            byte[] written = await File.ReadAllBytesAsync(target.FullOutputFileName);
+            File.Exists(target.FullOutputFilePath).Should().BeTrue();
+            byte[] written = await File.ReadAllBytesAsync(target.FullOutputFilePath);
             written.Should().Equal(bytes);
         }
 
@@ -187,7 +187,7 @@ namespace Downloader.Tests.Service
             await sut.ExportDownloadedFile(target, stream);
 
             // Assert
-            byte[] written = await File.ReadAllBytesAsync(target.FullOutputFileName!);
+            byte[] written = await File.ReadAllBytesAsync(target.FullOutputFilePath!);
             written.Should().Equal(bytes);
         }
 
@@ -204,7 +204,7 @@ namespace Downloader.Tests.Service
             await sut.ExportDownloadedFile(target, stream);
 
             // Assert
-            target.FullOutputFileName.Should().EndWith(Path.Combine("downloads", "X.xlsx"));
+            target.FullOutputFilePath.Should().EndWith(Path.Combine("downloads", "X.xlsx"));
         }
 
         [Test]
@@ -220,7 +220,7 @@ namespace Downloader.Tests.Service
             await sut.ExportDownloadedFile(target, stream);
 
             // Assert
-            target.FullOutputFileName.Should().EndWith(Path.Combine("downloads", "R.pdf"));
+            target.FullOutputFilePath.Should().EndWith(Path.Combine("downloads", "R.pdf"));
         }
 
         [Test]
@@ -236,7 +236,7 @@ namespace Downloader.Tests.Service
             await sut.ExportDownloadedFile(target, stream);
 
             // Assert
-            target.FullOutputFileName.Should().EndWith(Path.Combine("downloads", "Report_2017.pdf"));
+            target.FullOutputFilePath.Should().EndWith(Path.Combine("downloads", "Report_2017.pdf"));
         }
 
         [Test]
@@ -252,7 +252,7 @@ namespace Downloader.Tests.Service
             await sut.ExportDownloadedFile(target, stream);
 
             // Assert
-            target.FullOutputFileName.Should().EndWith(Path.Combine("downloads", "archive.tar.gz"));
+            target.FullOutputFilePath.Should().EndWith(Path.Combine("downloads", "archive.tar.gz"));
         }
 
         [Test]
@@ -267,7 +267,7 @@ namespace Downloader.Tests.Service
             await sut.ExportDownloadedFile(target, stream);
 
             // Assert
-            target.FullOutputFileName.Should().EndWith(Path.Combine("downloads", "compressed.gz"));
+            target.FullOutputFilePath.Should().EndWith(Path.Combine("downloads", "compressed.gz"));
         }
 
         [Test]
@@ -282,7 +282,7 @@ namespace Downloader.Tests.Service
             await sut.ExportDownloadedFile(target, stream);
 
             // Assert
-            target.FullOutputFileName.Should().EndWith(Path.Combine("downloads", "NoExt"));
+            target.FullOutputFilePath.Should().EndWith(Path.Combine("downloads", "NoExt"));
         }
 
         #endregion
@@ -365,7 +365,7 @@ namespace Downloader.Tests.Service
             mock.SetupGet(x => x.SecondaryLink).Returns(secondaryLink);
 
             // service sets this property
-            mock.SetupProperty(x => x.FullOutputFileName, (string?) null);
+            mock.SetupProperty(x => x.FullOutputFilePath, (string?) null);
 
             return mock.Object;
         }

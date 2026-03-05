@@ -82,7 +82,7 @@ namespace Downloader.Service
             string finalFileName = string.IsNullOrEmpty(extension) ? fileName : fileName + extension;
             string fullPath = Path.Combine(exportPath, finalFileName);
             logger.LogDebug("Resolved output file path: {FullPath}", fullPath);
-            target.FullOutputFileName = fullPath;
+            target.FullOutputFilePath = fullPath;
 
             if (fileStream.CanSeek && fileStream.Position != 0)
             {
