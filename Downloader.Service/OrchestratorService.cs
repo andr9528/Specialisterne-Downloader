@@ -7,6 +7,21 @@ using Microsoft.Extensions.Options;
 
 namespace Downloader.Service
 {
+    /// FEEDBACK
+    /// S: SplitTargetsOnLinkExistence: Should Orchestrator be responsible for dividing valid and not valid links?
+    /// S: Could maybe also consider a service to take care of the queue
+    /// O:
+    /// L:
+    /// I:
+    /// D:
+    /// Naming: Async Methods should be named with Async in the end
+    /// Readability: TargetCounts seems unnecessarily complex
+    /// Organisation: I like that there is many private methods to make the main public more readable
+    /// Comments: Use of readable methods makes comments unnecessary
+    /// Error Handling: No error handling at this level. Could be last ditch handling?
+    /// Logging: Lots of logging. Hard to say if more is needed. (If there was more error handling)
+    /// Test Ideas:
+    /// Other:
     public class OrchestratorService : IOrchestratorService
     {
         private readonly ILogger<OrchestratorService> logger;

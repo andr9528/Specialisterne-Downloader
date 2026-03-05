@@ -4,6 +4,20 @@ using System.Net.Mime;
 
 namespace Downloader.Service
 {
+    /// FEEDBACK
+    /// S:
+    /// O:
+    /// L:
+    /// I:
+    /// D:
+    /// Naming: Could be TryDownloadOnceAsync. It seems to be very an attempt at something
+    /// Readability: sw and ms could be full names
+    /// Organisation:
+    /// Comments:
+    /// Error Handling: Hard to see how the HttpRequestExceptions are handled. Could log the exception and rethrow to make more obvious
+    /// Logging:
+    /// Test Ideas:
+    /// Other:
     public class HttpFileDownloaderService : IHttpFileDownloaderService
     {
         private readonly HttpClient httpClient;

@@ -1,5 +1,10 @@
 ﻿namespace Downloader.Model
 {
+    //FEEDBACK: Models could be created with Domain defined types to enforce business rules
+    //Both DownloaderSettings and DownloadTarget is user input and could have validation build in
+    //DataTransferObjects with simple types could then be used for transfer of data (As they are here)
+    //Defined Domain types would also make it harder for future developers to error in creating.
+    //Example: PrimaryLink and SecondaryLink Could have defined types as a future developer might accidently make the secondary primary in creation of object
     public class DownloaderSettings
     {
         /// <summary>

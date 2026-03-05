@@ -11,6 +11,20 @@ using Downloader.Extensions;
 
 namespace Downloader.Service
 {
+    /// FEEDBACK
+    /// S:
+    /// O:
+    /// L:
+    /// I:
+    /// D:
+    /// Naming:
+    /// Readability:
+    /// Organisation:
+    /// Comments:
+    /// Error Handling:
+    /// Logging:
+    /// Test Ideas:
+    /// Other:
     public class LocalDriveFileService : IFileService
     {
         private static readonly HashSet<string> WrapperExtensions = new(StringComparer.OrdinalIgnoreCase)
@@ -39,7 +53,9 @@ namespace Downloader.Service
         /// <inheritdoc />
         public async Task<IList<IDownloadTarget>> LoadTargetsFromInput()
         {
-            string inputSourceFile = options.Value.FilesToDownloadExcelInput;
+            // string inputSourceFile = options.Value.FilesToDownloadExcelInput;
+            //CHANGE: This is done for easier Integrationtesting
+            string inputSourceFile = Environment.GetEnvironmentVariable("INPUT_FILE") ?? options.Value.FilesToDownloadExcelInput;
 
             logger.LogInformation("Loading download targets from input file: {InputFile}", inputSourceFile);
 
@@ -302,7 +318,9 @@ namespace Downloader.Service
             if (string.IsNullOrWhiteSpace(fileExtension))
                 throw new ArgumentException("File extension cannot be null or empty.", nameof(fileExtension));
 
-            string exportPath = options.Value.ReportsOutputPath;
+            // string exportPath = options.Value.ReportsOutputPath;
+            //CHANGE: This is done for easier Integrationtesting
+            string exportPath = Environment.GetEnvironmentVariable("WORK_DIR") ?? options.Value.ReportsOutputPath;
 
             logger.LogInformation("Starting report export. Extension: {Extension}", fileExtension);
 
@@ -321,7 +339,9 @@ namespace Downloader.Service
             fileExtension = fileExtension.Trim().TrimStart('.');
 
             var datePart = DateTime.Now.ToString("yyyyMMdd_HHmmss");
-            var fileName = $"report-{datePart}.{fileExtension}";
+            // var fileName = $"report-{datePart}.{fileExtension}";
+            //CHANGE: This is done for easier Integrationtesting
+            var fileName = Environment.GetEnvironmentVariable("REPORT_FILE") ?? $"report-{datePart}.{fileExtension}";
             string fullPath = Path.Combine(exportPath, fileName);
 
             logger.LogDebug("Resolved report file path. FileName: {FileName}, FullPath: {FullPath}", fileName,
@@ -334,6 +354,7 @@ namespace Downloader.Service
         {
             try
             {
+                //FEEDBACK: Does this have to be async? Its one file, one report
                 await File.WriteAllTextAsync(fullPath, content);
 
                 logger.LogInformation("Report successfully exported to {FullPath}. Size: {ContentLength} characters",

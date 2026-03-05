@@ -16,6 +16,9 @@ namespace Downloader.Executor.Startup.Modules
 
         public LoggingStartupModule(string applicationDataPath)
         {
+            // LogDirectory = Path.Combine(applicationDataPath, "Logs");
+            //CHANGE: This is done for easier Integrationtesting
+            applicationDataPath = Environment.GetEnvironmentVariable("WORK_DIR") ?? applicationDataPath;
             LogDirectory = Path.Combine(applicationDataPath, "Logs");
         }
 

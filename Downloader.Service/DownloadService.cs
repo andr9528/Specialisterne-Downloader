@@ -9,6 +9,20 @@ using Downloader.Abstraction.Enum;
 
 namespace Downloader.Service
 {
+    /// FEEDBACK
+    /// S:
+    /// O:
+    /// L:
+    /// I:
+    /// D:
+    /// Naming: Async on the end of async methods. TryDownloadAndExport Could maybe me CouldDownloadAndExport (?). Generally bools should be yes or no questions. "Could You Download and Export?"
+    /// Readability: Very readable
+    /// Organisation:
+    /// Comments:
+    /// Error Handling: Lack of error handling. Fail use cases?. Use of Default Exception, should always try to specify Exception [Custom].
+    /// Logging: Very much logging
+    /// Test Ideas:
+    /// Other:
     public class DownloadService : IDownloadService
     {
         private readonly ILogger<DownloadService> logger;
@@ -113,6 +127,7 @@ namespace Downloader.Service
             return DownloadAttemptResult.Failure();
         }
 
+        //FEEDBACK: This Method Seems to actually try the download, not just handle the result of it. The download could be run in TryDownloadWithRetries and then the result handed to handle
         private async Task<DownloadAttemptResult> HandleSuccessfulAttempt(
             string link, DownloadedUsing downloadedUsing, int attempt, int maxDownloadTries)
         {

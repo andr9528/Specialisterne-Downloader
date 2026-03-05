@@ -1,0 +1,11 @@
+General
+    - When testing exceptions never check for messages, but only for the specific type of exception thrown.
+    - Methods should always try to not throw generic exceptions, but messages might change.
+DownloadServiceTests
+    - Jeg ved ikke om der nogen gange bliver testet ting, om er sat i testen. Så det tester ikke rigtig noget?
+    - I feel like that sometimes things are tested that has been set in the test. Which means nothing is tested?
+    - Make Primart and Secondary variables and set in the setup
+    - Make options the same in the test and maybe just capable of being set in individual test
+HttpFileDownloaderServiceTests
+    - Added DownloadOnce_WhenResponseIsNonSuccess_ThrowsHttpRequestException - Multiple run
+    - Added DownloadOnce_WhenResponseIsSuccess_With_NoContent

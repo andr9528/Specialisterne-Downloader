@@ -1,0 +1,3 @@
+Very simple easily extended and very modular
+Async Methods should end on Async (I am bad at this too)
+Does the DownloadService have to know about FileService, as the Orchestrator already makes use of it and could take care of contacting FileService to save Pdfs

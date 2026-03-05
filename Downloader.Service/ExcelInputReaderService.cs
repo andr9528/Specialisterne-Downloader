@@ -8,6 +8,20 @@ using Microsoft.Extensions.Options;
 
 namespace Downloader.Service
 {
+    /// FEEDBACK
+    /// S:
+    /// O:
+    /// L:
+    /// I:
+    /// D:
+    /// Naming: In try methods I kinda expect a try and handling if the try fails
+    /// Readability: Very readable
+    /// Organisation: Nicely organized to private methods and easily readable from the main method
+    /// Comments:
+    /// Error Handling: Not Much error handling.
+    /// Logging: Lot of logging
+    /// Test Ideas:
+    /// Other:
     public class ExcelInputReaderService : IInputReaderService
     {
         private readonly ILogger<ExcelInputReaderService> logger;
@@ -85,6 +99,7 @@ namespace Downloader.Service
             return new XLWorkbook(path);
         }
 
+        //FEEDBACK: This could take from options which worksheet you want to use form a workbook
         private IXLWorksheet GetWorksheet(XLWorkbook workbook)
         {
             return workbook.Worksheets.First();

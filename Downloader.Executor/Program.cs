@@ -30,6 +30,20 @@ namespace Downloader.Executor
             orchestrator = scope.ServiceProvider.GetRequiredService<IOrchestratorService>();
         }
 
+        /// FEEDBACK
+        /// S:
+        /// O:
+        /// L:
+        /// I:
+        /// D:
+        /// Naming:
+        /// Readability:
+        /// Organisation:
+        /// Comments:
+        /// Error Handling:
+        /// Logging:
+        /// Test Ideas:
+        /// Other:
         private static async Task Main(string[] args)
         {
             var program = new Program(args);

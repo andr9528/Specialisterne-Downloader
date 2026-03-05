@@ -61,6 +61,52 @@ namespace Downloader.Tests.Service
             act.Should().ThrowAsync<HttpRequestException>();
         }
 
+        //ADDED TEST
+        //Added test that test multiple StatusCodes (Might Replace DownloadOnce_WhenResponseIsNonSuccess_ThrowsHttpRequestException)
+        [TestCase(HttpStatusCode.BadRequest)]
+        [TestCase(HttpStatusCode.Unauthorized)]
+        [TestCase(HttpStatusCode.Forbidden)]
+        [TestCase(HttpStatusCode.NotFound)]
+        [TestCase(HttpStatusCode.InternalServerError)]
+        public async Task DownloadOnce_WhenResponseIsNonSuccess_ThrowsHttpRequestException(HttpStatusCode statusCode)
+        {
+            // Arrange
+            var link = "https://example.com/fail";
+
+            var handlerMock =
+                CreateHandlerReturning(statusCode, Array.Empty<byte>(), out RequestCapture _);
+            using var httpClient = new HttpClient(handlerMock.Object);
+            var sut = new HttpFileDownloaderService(httpClient);
+
+            // Act
+            AsyncTestDelegate act = async () => await sut.DownloadOnce(link);
+
+            // Assert
+            Assert.ThrowsAsync<HttpRequestException>(act);
+        }
+
+        //ADDED TEST
+        //Attempted Tes for Success, but With no Content Expectiong some kind of exception Most like InvalidOperations.
+        //Suspects that CreateHandlerReturning might not reflect NoContent response very well
+        //Empty bytes should maybe still trigger af InvalidOperationsException
+        [Test]
+        public async Task DownloadOnce_WhenResponseIsSuccess_With_NoContent()
+        {
+            // Arrange
+            var link = "https://example.com/nocontent";
+
+            var handlerMock =
+                CreateHandlerReturning(HttpStatusCode.NoContent, Array.Empty<byte>(), out RequestCapture _);
+            using var httpClient = new HttpClient(handlerMock.Object);
+            var sut = new HttpFileDownloaderService(httpClient);
+
+            // Act
+            Func<Task> act = async () => await sut.DownloadOnce(link);
+
+            // Assert
+            await act.Should().ThrowAsync<InvalidOperationException>();        
+        }
+
         [Test]
         public void DownloadOnce_WhenCancelled_ThrowsOperationCanceledException()
         {

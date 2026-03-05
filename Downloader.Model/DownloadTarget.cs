@@ -9,7 +9,7 @@ namespace Downloader.Model
         public string OutputFileName { get; set; }
 
         /// <inheritdoc />
-        public string? FullOutputFileName { get; set; }
+        public string? FullOutputFileName { get; set; } //FEEDBACK: Does this mean path to file?
 
         /// <inheritdoc />
         public string PrimaryLink { get; set; }

@@ -15,6 +15,21 @@ using Microsoft.Extensions.Http;
 
 namespace Downloader.Executor
 {
+    /// FEEDBACK
+    /// S: Validate Methods could be DownloaderSettings own responsiblity. Since its job is to represent its own correct data(?)
+    /// S: I am not certain it should take responsibility for Normalizing either. Also unsure if the application should even do this and not just report error to user, or create a funtionality to set settings in the application
+    /// O:
+    /// L:
+    /// I:
+    /// D:
+    /// Naming: Generally good naming, maybe something on the bool return methods with IsNormalized or CanValidate
+    /// Readability:
+    /// Organisation: Good small methods
+    /// Comments:
+    /// Error Handling: Does not seem to be much error handling. Might be because we expect to default if settings is not configured correctly
+    /// Logging: No real logging, but is setup. So is mostly for debugging
+    /// Test Ideas:
+    /// Other:
     public class ExeStartup : ModularStartup
     {
         private const string SETTINGS_SECTIONS = "Downloader";
@@ -24,13 +39,15 @@ namespace Downloader.Executor
 
         public ExeStartup()
         {
-            AddModule(new LoggingStartupModule(GetApplicationDataPath()));
+            var environmentWorkingDirectory = Environment.GetEnvironmentVariable("WORK_DIR") ?? GetApplicationDataPath();
+
+            AddModule(new LoggingStartupModule(environmentWorkingDirectory));
 
             defaultDownloaderSettings = new DownloaderSettings
             {
-                DownloadedFilesOutputPath = Path.Combine(GetApplicationDataPath(), "Downloads"),
-                ReportsOutputPath = Path.Combine(GetApplicationDataPath(), "Reports"),
-                FilesToDownloadExcelInput = Path.Combine(GetApplicationDataPath(), "GRI_2017_2020.xlsx"),
+                DownloadedFilesOutputPath = Path.Combine(environmentWorkingDirectory, "Downloads"),
+                ReportsOutputPath = Path.Combine(environmentWorkingDirectory, "Reports"),
+                FilesToDownloadExcelInput = Path.Combine(environmentWorkingDirectory, "GRI_2017_2020.xlsx"),
             };
         }
 
@@ -42,8 +59,10 @@ namespace Downloader.Executor
 
         public IHost BuildHost(string[] args)
         {
-            return Host.CreateDefaultBuilder(args).ConfigureAppConfiguration(ConfigureAppConfiguration)
-                .ConfigureServices(SetupServices).Build();
+            return Host.CreateDefaultBuilder(args)
+                .ConfigureAppConfiguration(ConfigureAppConfiguration)
+                .ConfigureServices(SetupServices)
+                .Build();
         }
 
         private void ConfigureAppConfiguration(
@@ -173,7 +192,8 @@ namespace Downloader.Executor
 
             services.AddOptions<DownloaderSettings>()
                 .Bind(hostBuilderContext.Configuration.GetSection(SETTINGS_SECTIONS))
-                .Validate(ValidateDownloaderSettings).ValidateOnStart();
+                .Validate(ValidateDownloaderSettings)
+                .ValidateOnStart();
 
             services.AddScoped<IOrchestratorService, OrchestratorService>();
             services.AddScoped<IDownloadService, DownloadService>();
