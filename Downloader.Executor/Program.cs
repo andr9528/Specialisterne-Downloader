@@ -13,6 +13,8 @@ namespace Downloader.Executor
 {
     internal class Program : IAsyncDisposable
     {
+        private const string COMMAND_PREFIX = "command=";
+
         private readonly ExeStartup startup;
         private readonly IHost host;
         private readonly IServiceScope scope;
@@ -32,9 +34,30 @@ namespace Downloader.Executor
 
         private static async Task Main(string[] args)
         {
-            var program = new Program(args);
+            (string[] hostArgs, string? command) = SplitArgs(args);
+
+            await using var program = new Program(hostArgs);
+
+            if (!string.IsNullOrWhiteSpace(command))
+            {
+                await program.HandleCommand(command);
+                return;
+            }
 
             await program.RunInteractiveMenu();
+        }
+
+        private static (string[] hostArgs, string? command) SplitArgs(string[] args)
+        {
+            string? startupCommand = args.FirstOrDefault(static arg =>
+                arg.StartsWith(COMMAND_PREFIX, StringComparison.InvariantCultureIgnoreCase));
+
+            string[] hostArgs = args
+                .Where(static arg => !arg.StartsWith(COMMAND_PREFIX, StringComparison.InvariantCultureIgnoreCase))
+                .ToArray();
+
+            string? command = startupCommand?.Substring(COMMAND_PREFIX.Length).Trim();
+            return (hostArgs, command);
         }
 
         public async ValueTask DisposeAsync()
